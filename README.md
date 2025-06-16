@@ -1,84 +1,170 @@
-🚀 Setup Instructions
+# 🍕 Pizza Restaurant API - Flask Backend
 
-    Clone the repo and enter the project folder.
+This project is a RESTful API for managing **restaurants**, **pizzas**, and the many-to-many relationship between them using **RestaurantPizzas**. It's built using **Flask**, **SQLAlchemy**, and follows the **MVC (Model-View-Controller)** design pattern.
 
-    Install dependencies with pipenv install.
+---
 
-    Activate environment: pipenv shell.
+## 📁 Project Purpose
 
-    Set Flask app: export FLASK_APP=server/app.py.
+The goal of this challenge is to:
+- Build a backend Flask API from scratch
+- Practice relational data modeling
+- Implement CRUD operations and validation
+- Test API endpoints using Postman
+- Structure code using MVC for better organization
 
-🗄️ Database Setup
+---
 
-    Run migrations:
+## 🧱 Tech Stack
 
-        flask db init
+- **Flask**: Lightweight web framework for Python
+- **Flask SQLAlchemy**: ORM for managing database models
+- **Flask Migrate**: For handling database migrations
+- **SQLite**: Local database
+- **Postman**: For testing endpoints
 
-        flask db migrate -m "Initial migration"
+---
 
-        flask db upgrade
+## ⚙️ Setup Instructions
 
-    Seed database: python -m server.seed
+```bash
+# Install dependencies
+pipenv install flask flask_sqlalchemy flask_migrate
+pipenv shell
 
-📁 Project Structure (MVC)
+# Set environment variable
+export FLASK_APP=server/app.py
 
-    models/: SQLAlchemy models (restaurant.py, pizza.py, restaurant_pizza.py)
+# Database setup
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
 
-    controllers/: Flask route handlers
+# Seed database with test data
+python -m server.seed
 
-    app.py: App factory + blueprint registration
+🏗 Project Structure (MVC)
 
-    seed.py: Seed data
+server/
+├── app.py                     # App factory that initializes Flask, DB, and Blueprints
+├── config.py                  # Configuration settings
+├── seed.py                    # Script to populate test data
+├── models/
+│   ├── restaurant.py          # Restaurant model
+│   ├── pizza.py               # Pizza model
+│   └── restaurant_pizza.py    # Join table with price validation
+├── controllers/
+│   ├── restaurant_controller.py       # Handles /restaurants routes
+│   ├── pizza_controller.py            # Handles /pizzas routes
+│   └── restaurant_pizza_controller.py # Handles /restaurant_pizzas
 
-    migrations/: Database version control
+🔄 Models Explained
+🏪 Restaurant
 
-🔁 API Endpoints
-🍽️ Restaurants
+    Fields: id, name, address
 
-    GET /restaurants: List all restaurants
+    Relationships: Has many restaurant_pizzas
 
-    GET /restaurants/<id>: Restaurant + pizzas
+🍕 Pizza
 
-        404 if not found
+    Fields: id, name, ingredients
 
-    DELETE /restaurants/<id>: Delete restaurant + related restaurant_pizzas
+    Relationships: Has many restaurant_pizzas
 
-        204 No Content if successful
+💰 RestaurantPizza (Join Table)
 
-🍕 Pizzas
+    Fields: id, price, restaurant_id, pizza_id
 
-    GET /pizzas: List all pizzas
+    Relationships: Belongs to a restaurant and a pizza
 
-➕ Restaurant Pizzas
+    Validation: Price must be between 1 and 30
 
-    POST /restaurant_pizzas: Create a RestaurantPizza
+    Enforces cascading delete: If a restaurant is deleted, associated restaurant_pizzas are also removed.
 
-        Validates price between 1–30
+🔁 API Routes Overview
+GET /restaurants
 
-        Returns joined pizza and restaurant data
+    Returns all restaurants
 
-✅ Validations
+GET /restaurants/<id>
 
-    price in RestaurantPizza must be 1–30
+    Returns a specific restaurant and its pizzas
 
-    404 for missing restaurant/<id> routes
+    Returns 404 if not found
 
-    Deleting a restaurant also deletes related records (cascading delete)
+DELETE /restaurants/<id>
 
-🧪 Testing with Postman
+    Deletes a restaurant and associated restaurant_pizzas
 
-    Import challenge-1-pizzas.postman_collection.json into Postman
+    Returns 204 No Content on success
 
-    Test all defined routes
+GET /pizzas
 
-📄 Submission Checklist
+    Returns all pizzas
 
-    ✅ MVC structure
+POST /restaurant_pizzas
 
-    ✅ Models with validations
+    Creates a new RestaurantPizza entry
 
-    ✅ All required routes
+    Validates that price is between 1 and 30
 
-    ✅ Passing Postman tests
+    Returns associated pizza and restaurant data on success
 
-    ✅ Clear README.md
+    Returns 400 with error message on failure
+
+✅ Example Request & Response
+POST /restaurant_pizzas
+
+Request:
+
+{
+  "price": 15,
+  "pizza_id": 1,
+  "restaurant_id": 2
+}
+
+Response:
+
+{
+  "id": 4,
+  "price": 15,
+  "pizza": {
+    "id": 1,
+    "name": "Pepperoni",
+    "ingredients": "Dough, Tomato Sauce, Cheese, Pepperoni"
+  },
+  "restaurant": {
+    "id": 2,
+    "name": "Mama's Pizza",
+    "address": "123 Main St"
+  }
+}
+
+🧪 Testing the API (Postman)
+
+    Open Postman
+
+    Click Import
+
+    Select challenge-1-pizzas.postman_collection.json
+
+    Test each endpoint: GET, POST, DELETE
+
+🧾 Summary
+
+This project demonstrates:
+
+    How to build a backend API using Flask
+
+    Setting up models with relationships and validations
+
+    Structuring a clean MVC codebase
+
+    Testing endpoints with Postman
+
+    Properly documenting a backend project
+
+👤 Author
+
+Leparan Felix
+GitHub: @leparan-felix
